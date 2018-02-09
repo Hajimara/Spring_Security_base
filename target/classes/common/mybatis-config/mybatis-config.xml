@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE configuration
+ 		 PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+ 		"http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+
+	<settings>
+		<setting name="callSettersOnNulls" value="false" />
+	</settings>
+
+	<typeAliases>
+		<typeAlias alias="userVO" type="org.web.service.domain.UserVO" />
+		<typeAlias alias="boardVO" type="org.web.service.domain.BoardVO" />
+	</typeAliases>
+
+	<mappers>
+		<mapper resource="mappers/userMapper.xml" />
+		<mapper resource="mappers/BoardMapper.xml" />
+	</mappers>
+
+</configuration>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+           http://www.springframework.org/schema/security
+           http://www.springframework.org/schema/security/spring-security-4.2.xsd">
+	<http use-expressions="true">
+
+		<intercept-url pattern="/*" access="permitAll" />
+		<intercept-url pattern="/admin/**" access="hasRole('ADMIN')" />
+		<!-- <intercept-url pattern="/**" access="hasAnyRole('USER, ADMIN')" /> -->
+		<!-- <intercept-url pattern="/*" access="isAuthenticated()"/> 모든 경로에 로그인이 
+			필요하다고 정의 로그인에 로그인이 필요한 상황이 발생 *절대 금지* -->
+		<!-- <intercept-url pattern="/**" access="permitAll" /> -->
+		<!-- <intercept-url pattern="/**" access="hasRole('USER')" /> -->
+
+		<form-login login-page="/login/loginForm"
+			default-target-url="/home" authentication-failure-url="/login/loginForm?error"
+			username-parameter="id" password-parameter="password" />
+
+		<logout logout-url="/logout" logout-success-url="/home" />
+		<access-denied-handler error-page="/login/accessDenied" />
+		<headers>
+			<cache-control />
+			<content-type-options />			
+			<frame-options policy="SAMEORIGIN" />
+			<xss-protection block="false" />
+			<!-- <hsts include-subdomains="true" max-age-seconds="31536000" /> https -->
+
+			<!-- <content-security-policy policy-directives="script-src 'self' https://trustedscripts.example.com; 
+				object-src https://trustedplugins.example.com; report-uri /csp-report-endpoint/" 
+				/> -->
+
+		</headers>
+		<csrf />
+		<!-- (Spring <form:form > Tag 를 사용하면 자동으로 값을 넣어 주기때문에 폼테그 사용시 위 내용을 선언하지 않아도 사용 가능 하다.)
+					출처: http://mycup.tistory.com/160 [한글창제의 기쁨] -->
+	</http>
+<!-- 
+	<beans:bean id="userDetailsService"
+		class="org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl">
+		<beans:property name="dataSource" ref="dataSource-mysql" />
+	</beans:bean>
+ -->
+
+
+	<!-- <authentication-manager> <authentication-provider> <user-service> <user 
+		name="user" password="password" authorities="ROLE_USER" /> <user name="admin" 
+		password="password" authorities="ROLE_ADMIN" /> </user-service> </authentication-provider> 
+		</authentication-manager> -->
+		
+		
+	<!-- provider -->
+	<authentication-manager>
+		<authentication-provider>
+			<jdbc-user-service data-source-ref="dataSource-mysql"
+				role-prefix=""
+				users-by-username-query="select UID, PASSWORD, ENABLED from TBL_USER where UID = ?"
+				authorities-by-username-query="select UID, AUTHORITY from TBL_AUTHORITIES where UID = ?"
+				group-authorities-by-username-query="select G.GID, G.GROUP_NAME, GA.AUTHORITY 
+				from TBL_GROUP G, TBL_GROUP_MEMBERS GM, TBL_GROUP_AUTHORITIES GA 
+				where GM.UID = ? and G.GID = GA.G_ID and G.GID = GM.G_ID" />
+		</authentication-provider>
+	</authentication-manager>
+				<!-- - users-by-sername-query="" : 아이디로 사용자 정보를 가져오는 쿼리 입니다. users 테이블에서 정보를 가져옵니다.
+				
+				- authorities-by-username-query="" : authorities 테이블로부터 권한정보를 가져옵니다.
+				
+				- group-authorities-by-username-query="" : 그룹/회원 관계로부터 권한정보를 가져옵니다.
+				
+				출처: http://pentode.tistory.com/146 [쉬고 싶은 개발자] -->
+
+
+</beans:beans>
+
